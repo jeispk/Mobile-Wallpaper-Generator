@@ -1,58 +1,56 @@
 import React, { useState, useCallback } from 'react';
-import { Sparkles, Image as ImageIcon, RefreshCcw, Github } from 'lucide-react';
+import { Sparkles, Image as ImageIcon, RefreshCcw, Settings } from 'lucide-react';
 import { generateWallpapers } from './services/geminiService';
 import { Wallpaper, GenerateStatus } from './types';
-import { ApiKeySelection } from './components/ApiKeySelection';
 import { FullImageViewer } from './components/FullImageViewer';
-
-// Sample placeholder while empty
-const PLACEHOLDER_IMAGE = "https://picsum.photos/1080/1920";
+import { ApiKeySelection } from './components/ApiKeySelection';
 
 const App: React.FC = () => {
-  const [hasApiKey, setHasApiKey] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [status, setStatus] = useState<GenerateStatus>('idle');
   const [wallpapers, setWallpapers] = useState<Wallpaper[]>([]);
   const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | null>(null);
 
-  const handleGenerate = useCallback(async () => {
+  // If no key is selected, show the selection screen
+  if (!hasKey) {
+    return <ApiKeySelection onKeySelected={() => setHasKey(true)} />;
+  }
+
+  const handleGenerate = async () => {
     if (!prompt.trim()) return;
     
     setStatus('generating');
-    setWallpapers([]); // Clear previous or keep them? Let's clear for fresh feel.
+    setWallpapers([]); 
 
     try {
       const results = await generateWallpapers(prompt);
       setWallpapers(results);
       setStatus('success');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      // Handle the case where the key might have become invalid or expired
+      if (error.toString().includes('Requested entity was not found')) {
+        setHasKey(false);
+      }
       setStatus('error');
     }
-  }, [prompt]);
+  };
 
   const handleRemix = (remixPrompt: string) => {
     setPrompt(remixPrompt);
-    // We need to trigger generation. Since state update is async, 
-    // we can't call handleGenerate immediately if it depends on 'prompt' state.
-    // Instead, we call the service directly or use a useEffect. 
-    // To keep it simple and robust:
     setStatus('generating');
     setWallpapers([]);
     generateWallpapers(remixPrompt).then(results => {
         setWallpapers(results);
         setStatus('success');
-    }).catch(() => setStatus('error'));
+    }).catch((error: any) => {
+        if (error.toString().includes('Requested entity was not found')) {
+          setHasKey(false);
+        }
+        setStatus('error');
+    });
   };
-
-  // Handle Key Selection Success
-  const onKeySelected = () => {
-    setHasApiKey(true);
-  };
-
-  if (!hasApiKey) {
-    return <ApiKeySelection onKeySelected={onKeySelected} />;
-  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-safe">
@@ -65,6 +63,13 @@ const App: React.FC = () => {
             </div>
             <h1 className="text-lg font-bold tracking-tight">MoodPaper</h1>
           </div>
+          <button 
+            onClick={() => setHasKey(false)}
+            className="p-2 rounded-full hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-white"
+            title="API 키 변경"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
         </div>
       </header>
 
@@ -102,7 +107,6 @@ const App: React.FC = () => {
               </>
             )}
             
-            {/* Cool shimmer effect */}
             {!status.startsWith('gen') && (
               <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover:animate-shimmer" />
             )}
@@ -155,7 +159,7 @@ const App: React.FC = () => {
             {/* Error State */}
             {status === 'error' && (
               <div className="col-span-2 md:col-span-4 rounded-xl bg-red-500/10 border border-red-500/20 p-6 text-center">
-                <p className="text-red-400 text-sm">이미지 생성에 실패했습니다.<br/>다시 시도해주세요.</p>
+                <p className="text-red-400 text-sm">이미지 생성에 실패했습니다.<br/>API 키 상태를 확인하거나 다시 시도해주세요.</p>
               </div>
             )}
           </div>

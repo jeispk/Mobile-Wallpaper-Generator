@@ -3,7 +3,7 @@ import { Wallpaper } from "../types";
 
 // Helper to generate a single image
 async function generateSingleImage(prompt: string, index: number): Promise<Wallpaper | null> {
-  // Always create a new instance to ensure we have the latest API key if it changed
+  // Create instance with the environment key
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
@@ -49,8 +49,9 @@ async function generateSingleImage(prompt: string, index: number): Promise<Wallp
 }
 
 export const generateWallpapers = async (prompt: string): Promise<Wallpaper[]> => {
+  if (!process.env.API_KEY) throw new Error("API Key is required");
+  
   // Run 4 requests in parallel to get 4 variations
-  // We use parallel requests because 'candidateCount' is often limited to 1 for image models in REST API
   const promises = Array.from({ length: 4 }).map((_, i) => generateSingleImage(prompt, i));
   
   const results = await Promise.all(promises);
