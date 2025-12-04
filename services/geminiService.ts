@@ -2,9 +2,9 @@ import { GoogleGenAI } from "@google/genai";
 import { Wallpaper } from "../types";
 
 // Helper to generate a single image
-async function generateSingleImage(prompt: string, index: number): Promise<Wallpaper | null> {
-  // Create instance with the environment key
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+async function generateSingleImage(apiKey: string, prompt: string, index: number): Promise<Wallpaper | null> {
+  // Create instance with the provided key
+  const ai = new GoogleGenAI({ apiKey: apiKey });
 
   try {
     const response = await ai.models.generateContent({
@@ -48,11 +48,11 @@ async function generateSingleImage(prompt: string, index: number): Promise<Wallp
   }
 }
 
-export const generateWallpapers = async (prompt: string): Promise<Wallpaper[]> => {
-  if (!process.env.API_KEY) throw new Error("API Key is required");
+export const generateWallpapers = async (apiKey: string, prompt: string): Promise<Wallpaper[]> => {
+  if (!apiKey) throw new Error("API Key is required");
   
   // Run 4 requests in parallel to get 4 variations
-  const promises = Array.from({ length: 4 }).map((_, i) => generateSingleImage(prompt, i));
+  const promises = Array.from({ length: 4 }).map((_, i) => generateSingleImage(apiKey, prompt, i));
   
   const results = await Promise.all(promises);
   

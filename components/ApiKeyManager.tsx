@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Key, Save, Upload, CheckCircle2, AlertCircle, Loader2, FileLock, ShieldCheck } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
@@ -106,27 +105,27 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ onKeyConfirmed, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-orange-950/20 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-md rounded-2xl bg-white border border-orange-100 shadow-2xl overflow-hidden">
         
         {/* Header */}
-        <div className="p-6 pb-4 border-b border-zinc-800 flex justify-between items-center">
+        <div className="p-6 pb-4 border-b border-orange-100 flex justify-between items-center bg-orange-50/50">
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-indigo-400" />
+            <h2 className="text-xl font-bold text-orange-950 flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-orange-500" />
               API 설정
             </h2>
-            <p className="text-xs text-zinc-400 mt-1">Gemini API 키를 관리합니다.</p>
+            <p className="text-xs text-orange-700 mt-1">Gemini API 키를 관리합니다.</p>
           </div>
           {onClose && (
-             <button onClick={onClose} className="text-zinc-500 hover:text-white text-sm">닫기</button>
+             <button onClick={onClose} className="text-orange-400 hover:text-orange-600 text-sm">닫기</button>
           )}
         </div>
 
         <div className="p-6 space-y-6">
           {/* Input Section */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">Gemini API Key</label>
+            <label className="text-sm font-medium text-orange-800">Gemini API Key</label>
             <div className="relative">
               <input
                 type="password"
@@ -136,24 +135,24 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ onKeyConfirmed, on
                     setStatus('idle');
                 }}
                 placeholder="AI Studio에서 발급받은 키 입력"
-                className="w-full rounded-xl bg-zinc-950 border border-zinc-800 p-3 pr-10 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
+                className="w-full rounded-xl bg-orange-50 border border-orange-200 p-3 pr-10 text-orange-900 placeholder-orange-300 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
               />
               <div className="absolute right-3 top-3">
                  {status === 'success' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
                  {status === 'error' && <AlertCircle className="h-5 w-5 text-red-500" />}
               </div>
             </div>
-            {errorMsg && <p className="text-xs text-red-400">{errorMsg}</p>}
+            {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
           </div>
 
           {/* Main Action */}
           <button
             onClick={testConnection}
             disabled={status === 'testing' || !apiKey}
-            className={`w-full rounded-xl py-3.5 text-sm font-bold flex items-center justify-center gap-2 transition-all
+            className={`w-full rounded-xl py-3.5 text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm
               ${status === 'success' 
                 ? 'bg-green-500 hover:bg-green-600 text-white' 
-                : 'bg-white hover:bg-zinc-200 text-black disabled:opacity-50'}`}
+                : 'bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:bg-orange-300'}`}
           >
             {status === 'testing' ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -165,30 +164,30 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ onKeyConfirmed, on
           </button>
 
           {/* Backup/Restore Toggle */}
-          <div className="border-t border-zinc-800 pt-4">
+          <div className="border-t border-orange-100 pt-4">
             <button 
                 onClick={() => setShowBackup(!showBackup)}
-                className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors w-full justify-center"
+                className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-600 transition-colors w-full justify-center"
             >
                 <FileLock className="h-3 w-3" />
                 {showBackup ? '백업/복원 숨기기' : '백업 및 복원 (고급)'}
             </button>
 
             {showBackup && (
-                <div className="mt-4 bg-zinc-950/50 rounded-xl p-4 border border-zinc-800 space-y-3 animate-in slide-in-from-top-2">
-                    <p className="text-xs text-zinc-400">키를 암호화하여 로컬 파일로 저장하거나 불러옵니다.</p>
+                <div className="mt-4 bg-orange-50 rounded-xl p-4 border border-orange-100 space-y-3 animate-in slide-in-from-top-2">
+                    <p className="text-xs text-orange-700">키를 암호화하여 로컬 파일로 저장하거나 불러옵니다.</p>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="암호화/복호화 비밀번호 설정"
-                        className="w-full rounded-lg bg-zinc-900 border border-zinc-800 p-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-lg bg-white border border-orange-200 p-2 text-sm text-orange-900 placeholder-orange-300 focus:border-orange-500 focus:outline-none"
                     />
                     <div className="flex gap-2">
                         <button
                             onClick={handleBackup}
                             disabled={!password || !apiKey || backupStatus === 'processing'}
-                            className="flex-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 py-2 text-xs text-white flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                            className="flex-1 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 py-2 text-xs text-orange-800 flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
                         >
                             <Save className="h-3 w-3" />
                             {backupStatus === 'done' ? '저장됨' : '파일로 저장'}
@@ -196,7 +195,7 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ onKeyConfirmed, on
                         <button
                             onClick={handleRestoreTrigger}
                             disabled={!password || backupStatus === 'processing'}
-                            className="flex-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 py-2 text-xs text-white flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                            className="flex-1 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 py-2 text-xs text-orange-800 flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
                         >
                             <Upload className="h-3 w-3" />
                             불러오기
